@@ -31,9 +31,19 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
 
+    const touristsSpotCollection = client.db('touristSpotDB').collection('touristSpot');
+
+    app.get('/spots', async(req, res)=>{
+        const cursor = touristsSpotCollection.find();
+        const result = await cursor.toArray();
+        res.send(result);
+    })
+
 app.post('/spots', async(req, res)=>{
     const newSpot = req.body;
     console.log(newSpot);
+    const result = await touristsSpotCollection.insertOne(newSpot);
+    res.send(result);
 })
 
     // Send a ping to confirm a successful connection
