@@ -33,6 +33,7 @@ async function run() {
 
     const touristsSpotCollection = client.db('touristSpotDB').collection('touristSpot');
     const userCollection = client.db('touristSpotDB').collection('user');
+    const countryCollection = client.db('touristSpotDB').collection('country');
 
     app.get('/spots', async(req, res)=>{
         const cursor = touristsSpotCollection.find();
@@ -51,6 +52,12 @@ app.post('/spots', async(req, res)=>{
     const newSpot = req.body;
     console.log(newSpot);
     const result = await touristsSpotCollection.insertOne(newSpot);
+    res.send(result);
+})
+
+app.get("/myLists/:email", async(req, res)=>{
+    console.log(req.params.email);
+    const result = await touristsSpotCollection.find({email: req.params.email}).toArray();
     res.send(result);
 })
 
@@ -88,6 +95,20 @@ app.post('/user', async(req, res) =>{
     const result = await userCollection.insertOne(user);
     res.send(result);
 })
+ 
+app.post('/country', async(req, res) =>{
+    const country = req.body;
+    const result = await countryCollection.insertOne(country);
+    res.send(result);
+})
+
+app.get('/country', async(req, res) =>{
+    const cursor = countryCollection.find()
+    const result = await cursor.toArray();
+    res.send(result);
+})
+
+app.get()
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
