@@ -8,7 +8,15 @@ const port = process.env.PORT || 5000;
 
 // middleware
 
-app.use(cors());
+app.use(
+  cors({
+    origin: [
+      "http://localhost:5173", // Add localhost to the allowed origins
+      "https://react-tourism-management-auth.web.app",
+      "https://tourism-management-server-sandy.vercel.app"
+    ],
+  })
+);
 app.use(express.json());
 
 
@@ -36,7 +44,18 @@ async function run() {
     const countryCollection = client.db('touristSpotDB').collection('country');
 
     app.get('/spots', async(req, res)=>{
-        const cursor = touristsSpotCollection.find();
+        const { search = "" } = req.query;
+
+          const query = {
+        $or: [
+          { tourists_spot_name: { $regex: search, $options: "i" } },
+          { country_Name: { $regex: search, $options: "i" } },
+          { seasonality: { $regex: search, $options: "i" } },
+        ],
+      };
+
+        const cursor = touristsSpotCollection.find(query);
+        
         const result = await cursor.toArray();
         res.send(result);
     })
